@@ -40,7 +40,7 @@ import java.text.DecimalFormat; // Dùng để làm tròn nhiệt độ
 
 
 public class MainActivity extends AppCompatActivity {
-
+    private ImageView ivChartButton;
     private RecyclerView rvHourlyForecast;
     private HourlyAdapter hourlyAdapter;
     private List<HourlyForecast> hourlyForecastList;
@@ -130,6 +130,16 @@ public class MainActivity extends AppCompatActivity {
         rvHourlyForecast = findViewById(R.id.rvHourlyForecast);
         // Ánh xạ RecyclerView "daily"
         rvDailyForecast = findViewById(R.id.rvDailyForecast);
+
+        ivChartButton = findViewById(R.id.ivChartButton);
+        ivChartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openChartActivity();
+            }
+        });
+
+
         // --- KẾT THÚC PHẦN ÁNH XẠ ---
 
 
@@ -314,7 +324,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Đặt hàm này bên ngoài (bên dưới) hàm onCreate
     private void fetchForecastData(String cityName) {
-        // 1. URL lấy dự báo
         String url = BASE_URL_FORECAST + "?q=" + cityName + "&appid=" + API_KEY + "&units=metric&lang=vi";
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -347,11 +356,9 @@ public class MainActivity extends AppCompatActivity {
                                                 JSONObject currentWeather = currentWeatherArray.getJSONObject(0);
                                                 String currentIcon = currentWeather.getString("icon");
 
-
                                                 hourlyForecastList.add(new HourlyForecast("Bây giờ", currentTemp, currentIcon));
-                                                // ---- 🔹 XỬ LÝ DỮ LIỆU DỰ BÁO ----
                                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                                                Date now = new Date(); // thời điểm hiện tại
+                                                Date now = new Date();
 
                                                 int count = 0;
                                                 for (int i = 0; i < list.length(); i++) {
@@ -359,12 +366,10 @@ public class MainActivity extends AppCompatActivity {
                                                     String dateTime = item.getString("dt_txt");
                                                     Date forecastTime = sdf.parse(dateTime);
 
-                                                    // chỉ lấy những mốc thời gian SAU thời điểm hiện tại
                                                     if (forecastTime.after(now)) {
                                                         String time = dateTime.substring(11, 16);
                                                         JSONObject mainForecast = item.getJSONObject("main");
                                                         String temp = df.format(mainForecast.getDouble("temp")) + "°";
-                                                        // Lấy mã icon từ API
                                                         JSONArray weatherArray = item.getJSONArray("weather");
                                                         JSONObject weather = weatherArray.getJSONObject(0);
                                                         String icon = weather.getString("icon");
@@ -372,28 +377,51 @@ public class MainActivity extends AppCompatActivity {
                                                         count++;
                                                     }
 
-                                                    // chỉ lấy tối đa 8 mốc (để hiển thị gọn)
                                                     if (count >= 8) break;
                                                 }
 
-                                                // ---- 🔹 DỰ BÁO NGÀY ----
+                                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                                                String todayDate = dateFormat.format(new Date());
+
+                                                java.util.HashMap<String, DailyData> dailyMap = new java.util.HashMap<>();
+
                                                 for (int i = 0; i < list.length(); i++) {
                                                     JSONObject item = list.getJSONObject(i);
                                                     String dateTime = item.getString("dt_txt");
-                                                    if (dateTime.contains("12:00:00")) {
-                                                        String day = getDayOfWeek(dateTime.substring(0, 10));
-                                                        JSONObject mainDay = item.getJSONObject("main");
-                                                        String tempHigh = "C: " + df.format(mainDay.getDouble("temp_max")) + "°";
-                                                        String tempLow = "T: " + df.format(mainDay.getDouble("temp_min")) + "°";
-                                                        // Lấy mã icon từ API
-                                                        JSONArray weatherArray = item.getJSONArray("weather");
-                                                        JSONObject weather = weatherArray.getJSONObject(0);
-                                                        String icon = weather.getString("icon");
-                                                        dailyForecastList.add(new DailyForecast(day, tempHigh, tempLow, icon));
+                                                    String date = dateTime.substring(0, 10);
+
+                                                    JSONObject mainDay = item.getJSONObject("main");
+                                                    float tempMax = (float) mainDay.getDouble("temp_max");
+                                                    float tempMin = (float) mainDay.getDouble("temp_min");
+                                                    int humidity = mainDay.getInt("humidity");
+
+                                                    JSONArray weatherArray = item.getJSONArray("weather");
+                                                    JSONObject weather = weatherArray.getJSONObject(0);
+                                                    String icon = weather.getString("icon");
+                                                    if (!dailyMap.containsKey(date)) {
+                                                        dailyMap.put(date, new DailyData(tempMax, tempMin, icon, humidity));
+                                                    } else {
+                                                        DailyData existing = dailyMap.get(date);
+                                                        if (tempMax > existing.tempMax) existing.tempMax = tempMax;
+                                                        if (tempMin < existing.tempMin) existing.tempMin = tempMin;
+                                                        existing.addHumidity(humidity);
                                                     }
                                                 }
 
-                                                // ---- 🔹 CẬP NHẬT UI ----
+                                                java.util.TreeMap<String, DailyData> sortedMap = new java.util.TreeMap<>(dailyMap);
+
+                                                for (java.util.Map.Entry<String, DailyData> entry : sortedMap.entrySet()) {
+                                                    String date = entry.getKey();
+                                                    DailyData data = entry.getValue();
+
+                                                    String day = getDayOfWeek(date);
+                                                    String tempHigh = "C: " + df.format(data.tempMax) + "°";
+                                                    String tempLow = "T: " + df.format(data.tempMin) + "°";
+
+                                                    int avgHumidity = data.getAverageHumidity();
+                                                    dailyForecastList.add(new DailyForecast(day, tempHigh, tempLow, data.icon, avgHumidity));
+                                                }
+
                                                 hourlyAdapter.notifyDataSetChanged();
                                                 dailyAdapter.notifyDataSetChanged();
 
@@ -484,7 +512,61 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void openChartActivity() {
+        ArrayList<String> days = new ArrayList<>();
+        ArrayList<Integer> temps = new ArrayList<>();
+        ArrayList<Integer> humidities = new ArrayList<>();
+
+        for (DailyForecast forecast : dailyForecastList) {
+            days.add(forecast.day);
+            String tempHigh = forecast.tempHigh.replace("C: ", "").replace("°", "");
+            try {
+                temps.add(Integer.parseInt(tempHigh));
+            } catch (NumberFormatException e) {
+                temps.add(25);
+            }
+            humidities.add(forecast.humidity);
+        }
+
+        Intent intent = new Intent(MainActivity.this, WeatherChartActivity.class);
+        intent.putStringArrayListExtra("days", days);
+        intent.putIntegerArrayListExtra("temps", temps);
+        intent.putIntegerArrayListExtra("humidities", humidities);
+        intent.putExtra("cityName", tvCityName.getText().toString());
 
 
+        startActivity(intent);
+    }
 
+    private static class DailyData {
+        float tempMax;
+        float tempMin;
+        String icon;
+
+        int humiditySum;
+        int humidityCount;
+
+        DailyData(float tempMax, float tempMin, String icon, int humidity) {
+            this.tempMax = tempMax;
+            this.tempMin = tempMin;
+            this.icon = icon;
+            this.humiditySum = humidity;
+            this.humidityCount = 1;
+        }
+
+        DailyData(float tempMax, float tempMin, String icon) {
+            this(tempMax, tempMin, icon, 0);
+            this.humidityCount = 0;
+        }
+
+        void addHumidity(int humidity) {
+            this.humiditySum += humidity;
+            this.humidityCount++;
+        }
+
+        int getAverageHumidity() {
+            if (humidityCount == 0) return 0;
+            return Math.round((float) humiditySum / humidityCount);
+        }
+    }
 }

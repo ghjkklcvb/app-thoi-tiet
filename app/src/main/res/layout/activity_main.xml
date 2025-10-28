@@ -9,7 +9,6 @@
     android:background="@color/black"
     tools:context=".MainActivity">
 
-
     <TextView
         android:id="@+id/tvCityName"
         android:layout_width="wrap_content"
@@ -57,7 +56,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
 
-
     <ScrollView
         android:id="@+id/mainScrollView"
         android:layout_width="0dp"
@@ -97,14 +95,16 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:columnCount="2"> <include
-                android:id="@+id/cardFeelsLike"
-                layout="@layout/detail_info_card"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="8dp"
-                android:background="@drawable/card_background" />
+                android:columnCount="2">
+
+                <include
+                    android:id="@+id/cardFeelsLike"
+                    layout="@layout/detail_info_card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/card_background" />
 
                 <include
                     android:id="@+id/cardHumidity"
@@ -153,12 +153,28 @@
 
             </GridLayout>
 
-
-
         </LinearLayout>
 
     </ScrollView>
 
+    <!-- ✅ NÚT BIỂU ĐỒ - ĐÃ SỬA (bên trái nút quản lý thành phố) -->
+    <ImageView
+        android:id="@+id/ivChartButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_line_chart"
+        app:tint="@color/white"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Xem biểu đồ"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivManageCities" />
+
+    <!-- NÚT QUẢN LÝ THÀNH PHỐ (giữ nguyên) -->
     <ImageView
         android:id="@+id/ivManageCities"
         android:layout_width="40dp"
@@ -174,5 +190,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-
-  </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
