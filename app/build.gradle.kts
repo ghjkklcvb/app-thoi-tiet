@@ -25,6 +25,10 @@ android {
             )
         }
     }
+    
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -42,4 +46,10 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation("com.android.volley:volley:1.2.1")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+
+
 }

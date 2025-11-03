@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -29,6 +31,9 @@
             android:name=".WeatherChartActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
+        <activity
+            android:name=".HistoryActivity"
+            android:label="Lịch sử thời tiết"/>
     </application>
 
 </manifest>

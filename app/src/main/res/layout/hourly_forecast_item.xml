@@ -25,8 +25,7 @@
         android:layout_height="32dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        tools:src="@drawable/ic_cloudy"
-        app:tint="@color/white" />
+        tools:src="@drawable/ic_cloudy" />
 
     <!-- Nhiệt độ -->
     <TextView

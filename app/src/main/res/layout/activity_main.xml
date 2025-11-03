@@ -9,18 +9,39 @@
     android:background="@color/black"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tvCityName"
+    <LinearLayout
+        android:id="@+id/llCityHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hà Nội"
-        android:textColor="@color/white"
-        android:textSize="34sp"
-        android:textStyle="bold"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvCityName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hà Nội"
+            android:textColor="@color/white"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/ivFavoriteButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="12dp"
+            android:src="@drawable/ic_star_outline"
+            android:contentDescription="Thêm vào yêu thích"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvTemperature"
@@ -32,7 +53,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCityName" />
+        app:layout_constraintTop_toBottomOf="@+id/llCityHeader" />
 
     <TextView
         android:id="@+id/tvDescription"
@@ -156,8 +177,39 @@
         </LinearLayout>
 
     </ScrollView>
+    <ImageView
+        android:id="@+id/ivRefreshLocation"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_location"
+        android:contentDescription="Làm mới vị trí"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        app:tint="@color/white"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivHistoryButton" />
 
-    <!-- ✅ NÚT BIỂU ĐỒ - ĐÃ SỬA (bên trái nút quản lý thành phố) -->
+    <!-- NÚT YÊU THÍCH -->
+    <ImageView
+        android:id="@+id/ivHistoryButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_star_outline"
+        android:contentDescription="Yêu thích"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        app:tint="@color/white"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivChartButton" />
+
     <ImageView
         android:id="@+id/ivChartButton"
         android:layout_width="40dp"

@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import android.content.SharedPreferences; // <-- Thêm "sổ tay"
+
 
 // Kế thừa từ RecyclerView.Adapter
 public class DailyAdapter extends RecyclerView.Adapter<DailyAdapter.DailyViewHolder> {
