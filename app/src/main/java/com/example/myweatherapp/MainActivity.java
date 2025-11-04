@@ -190,6 +190,8 @@ public class MainActivity extends AppCompatActivity {
         ivFavoriteButton.setOnClickListener(v -> {
             toggleFavorite();
         });
+        
+
     }
 
     // ===== ✅ HÀM LẤY VỊ TRÍ HIỆN TẠI =====
@@ -258,8 +260,6 @@ public class MainActivity extends AppCompatActivity {
     private void fetchWeatherDataByCoordinates(double lat, double lon) {
         String url = BASE_URL + "?lat=" + lat + "&lon=" + lon
                 + "&appid=" + API_KEY + "&units=metric&lang=vi";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
@@ -351,15 +351,13 @@ public class MainActivity extends AppCompatActivity {
                     tvCityName.setText("Không thể tải dữ liệu");
                 });
 
-        requestQueue.add(stringRequest);
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     // ===== ✅ LẤY DỰ BÁO THEO TỌA ĐỘ =====
     private void fetchForecastDataByCoordinates(double lat, double lon) {
         String url = BASE_URL_FORECAST + "?lat=" + lat + "&lon=" + lon
                 + "&appid=" + API_KEY + "&units=metric&lang=vi";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
@@ -451,7 +449,7 @@ public class MainActivity extends AppCompatActivity {
                 },
                 error -> error.printStackTrace());
 
-        requestQueue.add(stringRequest);
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     // ===== ✅ XỬ LÝ KẾT QUẢ XIN QUYỀN =====
@@ -558,10 +556,7 @@ public class MainActivity extends AppCompatActivity {
         // units=metric để lấy nhiệt độ theo độ C
         String url = BASE_URL + "?q=" + cityName + "&appid=" + API_KEY + "&units=metric&lang=vi";
 
-        // 2. Tạo một "hàng đợi" (RequestQueue)
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-        // 3. Tạo một "yêu cầu" (Request)
+        // 2. Tạo một "yêu cầu" (Request) - Sử dụng VolleySingleton
         // Chúng ta yêu cầu máy chủ trả về dữ liệu dạng Chuỗi (StringRequest)
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -694,7 +689,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         // 4. Thêm "yêu cầu" vào "hàng đợi" để nó bắt đầu chạy
-        requestQueue.add(stringRequest);
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     // ✅ HÀM ĐÃ ĐƯỢC VIẾT LẠI HOÀN CHỈNH
@@ -703,8 +698,7 @@ public class MainActivity extends AppCompatActivity {
         String url = BASE_URL_FORECAST + "?q=" + cityName
                 + "&appid=" + API_KEY + "&units=metric&lang=vi";
 
-        // 2. Gọi Volley (Lưu ý: Em nên dùng Volley Singleton như thầy góp ý)
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        // 2. Gọi Volley sử dụng Singleton pattern
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
@@ -810,7 +804,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         // 5. Thêm yêu cầu vào hàng đợi
-        requestQueue.add(stringRequest);
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
 
@@ -869,15 +863,85 @@ public class MainActivity extends AppCompatActivity {
 
     // ===== ✅ CÁC METHOD MỚI CHO TÍNH NĂNG YÊU THÍCH VÀ HÌNH NỀN =====
     
-    private void updateBackgroundBasedOnWeather(String weatherDescription, String iconCode) {
-        int backgroundResource = WeatherBackgroundManager.getBackgroundResource(weatherDescription, iconCode);
-        View mainLayout = findViewById(R.id.main);
-        
-        // Thêm animation fade in khi thay đổi background
-        android.view.animation.Animation fadeIn = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        mainLayout.setBackgroundResource(backgroundResource);
-        mainLayout.startAnimation(fadeIn);
+    private boolean checkAssetExists(String fileName) {
+        try {
+            getAssets().open(fileName).close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
+    
+    private void loadGifAlternative(android.widget.ImageView imageView, String fileName, int placeholder) {
+        try {
+            com.bumptech.glide.Glide.with(this)
+                .asGif()
+                .load("android_asset://" + fileName)
+                .placeholder(placeholder)
+                .error(placeholder)
+                .into(imageView);
+        } catch (Exception e) {
+            imageView.setImageResource(placeholder);
+        }
+    }
+    
+
+    
+    private void updateBackgroundBasedOnWeather(String weatherDescription, String iconCode) {
+        String backgroundImageName = WeatherBackgroundManager.getBackgroundImageName(weatherDescription, iconCode);
+        int placeholderDrawable = WeatherBackgroundManager.getPlaceholderDrawable(weatherDescription, iconCode);
+        android.widget.ImageView backgroundImageView = findViewById(R.id.ivAnimatedBackground);
+        
+        if (backgroundImageView == null) return;
+        
+        // Set placeholder trước
+        backgroundImageView.setImageResource(placeholderDrawable);
+        
+        // Kiểm tra file có tồn tại không
+        if (!checkAssetExists(backgroundImageName)) {
+            return; // Chỉ dùng placeholder
+        }
+        
+        // Load ảnh động bằng Glide
+        String assetPath = "file:///android_asset/" + backgroundImageName;
+        
+        try {
+            com.bumptech.glide.Glide.with(this)
+                .asGif()
+                .load(assetPath)
+                .placeholder(placeholderDrawable)
+                .error(placeholderDrawable)
+                .fallback(placeholderDrawable)
+                .listener(new com.bumptech.glide.request.RequestListener<com.bumptech.glide.load.resource.gif.GifDrawable>() {
+                    @Override
+                    public boolean onLoadFailed(com.bumptech.glide.load.engine.GlideException e, Object model, 
+                                              com.bumptech.glide.request.target.Target<com.bumptech.glide.load.resource.gif.GifDrawable> target, 
+                                              boolean isFirstResource) {
+                        return false; // Let Glide handle the error
+                    }
+                    
+                    @Override
+                    public boolean onResourceReady(com.bumptech.glide.load.resource.gif.GifDrawable resource, Object model, 
+                                                 com.bumptech.glide.request.target.Target<com.bumptech.glide.load.resource.gif.GifDrawable> target, 
+                                                 com.bumptech.glide.load.DataSource dataSource, boolean isFirstResource) {
+                        return false; // Let Glide handle the success
+                    }
+                })
+                .into(backgroundImageView);
+        } catch (Exception e) {
+            // Fallback - thử method alternative
+            loadGifAlternative(backgroundImageView, backgroundImageName, placeholderDrawable);
+        }
+        
+        // Animation cho header card
+        View headerLayout = findViewById(R.id.llCityHeader);
+        if (headerLayout != null) {
+            android.view.animation.Animation scaleIn = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.scale_in);
+            headerLayout.startAnimation(scaleIn);
+        }
+    }
+    
+
     
     private void updateFavoriteButton() {
         boolean isFavorite = favoriteManager.isFavorite(currentCityName);

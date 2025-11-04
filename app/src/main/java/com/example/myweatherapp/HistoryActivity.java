@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +30,6 @@ public class HistoryActivity extends AppCompatActivity implements FavoriteLocati
     private FavoriteLocationAdapter favoriteAdapter;
     private List<FavoriteLocation> favoriteList;
 
-    private TextView tvTitle;
     private ImageView ivBack;
 
     private FavoriteLocationManager favoriteManager;
@@ -43,11 +43,7 @@ public class HistoryActivity extends AppCompatActivity implements FavoriteLocati
 
         // Ánh xạ views
         rvFavorites = findViewById(R.id.rvHistory);
-        tvTitle = findViewById(R.id.tvHistoryCityName);
         ivBack = findViewById(R.id.ivBack);
-
-        // Đổi title
-        tvTitle.setText("Địa điểm yêu thích");
 
         // Nút quay lại
         ivBack.setOnClickListener(v -> finish());
@@ -60,6 +56,15 @@ public class HistoryActivity extends AppCompatActivity implements FavoriteLocati
         
         rvFavorites.setLayoutManager(new LinearLayoutManager(this));
         rvFavorites.setAdapter(favoriteAdapter);
+        
+        // Thêm scroll listener để thay đổi background theo item đang hiển thị
+        rvFavorites.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                updatePageBackgroundOnScroll();
+            }
+        });
 
         // Load danh sách yêu thích
         loadFavorites();
@@ -74,14 +79,62 @@ public class HistoryActivity extends AppCompatActivity implements FavoriteLocati
         if (favoriteList.isEmpty()) {
             rvFavorites.setVisibility(View.GONE);
             emptyStateLayout.setVisibility(View.VISIBLE);
+            // Set default background khi không có yêu thích
+            setPageBackground("clear", "01d");
         } else {
             rvFavorites.setVisibility(View.VISIBLE);
             emptyStateLayout.setVisibility(View.GONE);
             // Cập nhật thông tin thời tiết cho các địa điểm yêu thích
             updateWeatherForFavorites();
+            // Set background theo địa điểm đầu tiên
+            if (!favoriteList.isEmpty()) {
+                FavoriteLocation firstLocation = favoriteList.get(0);
+                setPageBackground(firstLocation.getWeatherDescription(), firstLocation.getIconCode());
+            }
         }
         
         favoriteAdapter.notifyDataSetChanged();
+    }
+    
+    private void setPageBackground(String weatherDescription, String iconCode) {
+        android.widget.ImageView backgroundImageView = findViewById(R.id.ivFavoritesBackground);
+        if (backgroundImageView == null) return;
+        
+        String backgroundImageName = WeatherBackgroundManager.getBackgroundImageName(weatherDescription, iconCode);
+        int placeholderDrawable = WeatherBackgroundManager.getPlaceholderDrawable(weatherDescription, iconCode);
+        
+        android.util.Log.d("FavoritesPage", "Setting page background: " + backgroundImageName);
+        
+        // Set placeholder trước
+        backgroundImageView.setImageResource(placeholderDrawable);
+        
+        // Thử load GIF background
+        try {
+            com.bumptech.glide.Glide.with(this)
+                .asGif()
+                .load("file:///android_asset/" + backgroundImageName)
+                .placeholder(placeholderDrawable)
+                .error(placeholderDrawable)
+                .fallback(placeholderDrawable)
+                .into(backgroundImageView);
+        } catch (Exception e) {
+            android.util.Log.e("FavoritesPage", "Error loading page background: " + e.getMessage());
+            backgroundImageView.setImageResource(placeholderDrawable);
+        }
+    }
+    
+    private void updatePageBackgroundOnScroll() {
+        if (favoriteList.isEmpty()) return;
+        
+        LinearLayoutManager layoutManager = (LinearLayoutManager) rvFavorites.getLayoutManager();
+        if (layoutManager == null) return;
+        
+        // Lấy item đầu tiên đang hiển thị
+        int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+        if (firstVisiblePosition >= 0 && firstVisiblePosition < favoriteList.size()) {
+            FavoriteLocation visibleLocation = favoriteList.get(firstVisiblePosition);
+            setPageBackground(visibleLocation.getWeatherDescription(), visibleLocation.getIconCode());
+        }
     }
 
     private void updateWeatherForFavorites() {
@@ -95,7 +148,7 @@ public class HistoryActivity extends AppCompatActivity implements FavoriteLocati
         String url = BASE_URL + "?lat=" + location.getLatitude() + "&lon=" + location.getLongitude()
                 + "&appid=" + API_KEY + "&units=metric&lang=vi";
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
@@ -131,7 +184,7 @@ public class HistoryActivity extends AppCompatActivity implements FavoriteLocati
                     // Không làm gì nếu lỗi, giữ nguyên dữ liệu cũ
                 });
 
-        requestQueue.add(stringRequest);
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     // Implement FavoriteLocationAdapter.OnItemClickListener

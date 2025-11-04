@@ -9,73 +9,98 @@
     android:background="@color/black"
     tools:context=".MainActivity">
 
+    <!-- Animated Background -->
+    <ImageView
+        android:id="@+id/ivAnimatedBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:alpha="0.8"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Header với hiệu ứng glass -->
     <LinearLayout
         android:id="@+id/llCityHeader"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="48dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/glass_card_background"
+        android:padding="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tvCityName"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hà Nội"
-            android:textColor="@color/white"
-            android:textSize="34sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/ivFavoriteButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="12dp"
-            android:src="@drawable/ic_star_outline"
-            android:contentDescription="Thêm vào yêu thích"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp" />
+            <TextView
+                android:id="@+id/tvCityName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hà Nội"
+                android:textColor="@color/white"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
+
+            <ImageView
+                android:id="@+id/ivFavoriteButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_star_outline"
+                android:contentDescription="Thêm vào yêu thích"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/favorite_button_background"
+                android:padding="6dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="28°"
+            android:textColor="@color/white"
+            android:textSize="72sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-light"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mây rải rác"
+            android:textColor="#E0E0E0"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tvHighLow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="C: 30°   T: 22°"
+            android:textColor="#CCCCCC"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:layout_marginTop="8dp" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvTemperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="28°"
-        android:textColor="@color/white"
-        android:textSize="96sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llCityHeader" />
 
-    <TextView
-        android:id="@+id/tvDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mây rải rác"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTemperature" />
-
-    <TextView
-        android:id="@+id/tvHighLow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="C: 30°   T: 22°"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
 
     <ScrollView
         android:id="@+id/mainScrollView"
@@ -85,161 +110,228 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvHighLow">
+        app:layout_constraintTop_toBottomOf="@+id/llCityHeader">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvHourlyForecast"
+            <!-- Hourly Forecast Card -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvDailyForecast"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:columnCount="2">
+                android:background="@drawable/glass_card_background"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <include
-                    android:id="@+id/cardFeelsLike"
-                    layout="@layout/detail_info_card"
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/card_background" />
+                    android:text="Dự báo theo giờ"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="12dp" />
 
-                <include
-                    android:id="@+id/cardHumidity"
-                    layout="@layout/detail_info_card"
-                    android:layout_width="0dp"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvHourlyForecast"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/card_background" />
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                <include
-                    android:id="@+id/cardWind"
-                    layout="@layout/detail_info_card"
-                    android:layout_width="0dp"
+            </LinearLayout>
+
+            <!-- Daily Forecast Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/glass_card_background"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/card_background" />
+                    android:text="Dự báo 5 ngày"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="12dp" />
 
-                <include
-                    android:id="@+id/cardVisibility"
-                    layout="@layout/detail_info_card"
-                    android:layout_width="0dp"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDailyForecast"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/card_background" />
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                <include
-                    android:id="@+id/cardSunriseSunset"
-                    layout="@layout/detail_info_card"
-                    android:layout_width="0dp"
+            </LinearLayout>
+
+            <!-- Weather Details Grid -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/glass_card_background"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/card_background" />
+                    android:text="Chi tiết thời tiết"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="12dp" />
 
-                <include
-                    android:id="@+id/cardUvIndex"
-                    layout="@layout/detail_info_card"
-                    android:layout_width="0dp"
+                <GridLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/card_background" />
+                    android:columnCount="2">
 
-            </GridLayout>
+                    <include
+                        android:id="@+id/cardFeelsLike"
+                        layout="@layout/detail_info_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/modern_card_background" />
+
+                    <include
+                        android:id="@+id/cardHumidity"
+                        layout="@layout/detail_info_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/modern_card_background" />
+
+                    <include
+                        android:id="@+id/cardWind"
+                        layout="@layout/detail_info_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/modern_card_background" />
+
+                    <include
+                        android:id="@+id/cardVisibility"
+                        layout="@layout/detail_info_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/modern_card_background" />
+
+                    <include
+                        android:id="@+id/cardSunriseSunset"
+                        layout="@layout/detail_info_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/modern_card_background" />
+
+                    <include
+                        android:id="@+id/cardUvIndex"
+                        layout="@layout/detail_info_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/modern_card_background" />
+
+                </GridLayout>
+
+            </LinearLayout>
+
+            <!-- Spacer for bottom buttons -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="80dp" />
 
         </LinearLayout>
 
     </ScrollView>
-    <ImageView
-        android:id="@+id/ivRefreshLocation"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/ic_location"
-        android:contentDescription="Làm mới vị trí"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+    <!-- Floating Action Buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/floating_button_background"
         android:padding="8dp"
-        app:tint="@color/white"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ivHistoryButton" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- NÚT YÊU THÍCH -->
-    <ImageView
-        android:id="@+id/ivHistoryButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/ic_star_outline"
-        android:contentDescription="Yêu thích"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:padding="8dp"
-        app:tint="@color/white"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ivChartButton" />
+        <ImageView
+            android:id="@+id/ivRefreshLocation"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_location"
+            android:contentDescription="Làm mới vị trí"
+            android:padding="10dp"
+            app:tint="@color/white"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginEnd="4dp" />
 
-    <ImageView
-        android:id="@+id/ivChartButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:padding="8dp"
-        android:src="@drawable/ic_line_chart"
-        app:tint="@color/white"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="Xem biểu đồ"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ivManageCities" />
+        <ImageView
+            android:id="@+id/ivHistoryButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_star_outline"
+            android:contentDescription="Yêu thích"
+            android:padding="10dp"
+            app:tint="@color/white"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginEnd="4dp" />
 
-    <!-- NÚT QUẢN LÝ THÀNH PHỐ (giữ nguyên) -->
-    <ImageView
-        android:id="@+id/ivManageCities"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:padding="8dp"
-        android:src="@drawable/ic_list_white"
-        app:tint="@color/white"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <ImageView
+            android:id="@+id/ivChartButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_line_chart"
+            app:tint="@color/white"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Xem biểu đồ"
+            android:layout_marginEnd="4dp" />
+
+        <ImageView
+            android:id="@+id/ivManageCities"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_list_white"
+            app:tint="@color/white"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Quản lý thành phố" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

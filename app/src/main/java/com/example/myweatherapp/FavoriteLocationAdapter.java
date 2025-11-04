@@ -61,6 +61,9 @@ public class FavoriteLocationAdapter extends RecyclerView.Adapter<FavoriteLocati
                     .into(holder.ivWeatherIcon);
         }
 
+        // ===== ✅ SET BACKGROUND THEO THỜI TIẾT =====
+        setWeatherBackground(holder, location);
+
         // Click listeners
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -74,6 +77,60 @@ public class FavoriteLocationAdapter extends RecyclerView.Adapter<FavoriteLocati
             }
         });
     }
+    
+    private void setWeatherBackground(ViewHolder holder, FavoriteLocation location) {
+        String iconCode = location.getIconCode();
+        String description = location.getWeatherDescription();
+        
+        // Lấy tên file GIF background
+        String backgroundImageName = WeatherBackgroundManager.getBackgroundImageName(description, iconCode);
+        int placeholderDrawable = WeatherBackgroundManager.getPlaceholderDrawable(description, iconCode);
+        
+        android.util.Log.d("FavoriteBackground", "Setting background for " + location.getCityName() + 
+                          ": " + backgroundImageName + ", icon: " + iconCode);
+        
+        // Set placeholder trước
+        holder.ivItemBackground.setImageResource(placeholderDrawable);
+        
+        // Thử load GIF background với animation
+        try {
+            Glide.with(holder.itemView.getContext())
+                .asGif()
+                .load("file:///android_asset/" + backgroundImageName)
+                .placeholder(placeholderDrawable)
+                .error(placeholderDrawable)
+                .fallback(placeholderDrawable)
+                .listener(new com.bumptech.glide.request.RequestListener<com.bumptech.glide.load.resource.gif.GifDrawable>() {
+                    @Override
+                    public boolean onLoadFailed(com.bumptech.glide.load.engine.GlideException e, Object model, 
+                                              com.bumptech.glide.request.target.Target<com.bumptech.glide.load.resource.gif.GifDrawable> target, 
+                                              boolean isFirstResource) {
+                        android.util.Log.d("FavoriteBackground", "GIF load failed for " + location.getCityName() + 
+                                          ", using placeholder");
+                        return false;
+                    }
+                    
+                    @Override
+                    public boolean onResourceReady(com.bumptech.glide.load.resource.gif.GifDrawable resource, Object model, 
+                                                 com.bumptech.glide.request.target.Target<com.bumptech.glide.load.resource.gif.GifDrawable> target, 
+                                                 com.bumptech.glide.load.DataSource dataSource, boolean isFirstResource) {
+                        android.util.Log.d("FavoriteBackground", "GIF loaded successfully for " + location.getCityName());
+                        
+                        // Thêm animation fade in khi load thành công
+                        android.view.animation.Animation fadeIn = android.view.animation.AnimationUtils
+                                .loadAnimation(holder.itemView.getContext(), R.anim.fade_in);
+                        holder.ivItemBackground.startAnimation(fadeIn);
+                        return false;
+                    }
+                })
+                .into(holder.ivItemBackground);
+        } catch (Exception e) {
+            // Fallback sử dụng placeholder drawable
+            android.util.Log.e("FavoriteBackground", "Exception loading background for " + 
+                              location.getCityName() + ": " + e.getMessage());
+            holder.ivItemBackground.setImageResource(placeholderDrawable);
+        }
+    }
 
     @Override
     public int getItemCount() {
@@ -82,7 +139,7 @@ public class FavoriteLocationAdapter extends RecyclerView.Adapter<FavoriteLocati
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvCityName, tvTemperature, tvDescription;
-        ImageView ivWeatherIcon, ivRemove;
+        ImageView ivWeatherIcon, ivRemove, ivItemBackground;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -91,6 +148,7 @@ public class FavoriteLocationAdapter extends RecyclerView.Adapter<FavoriteLocati
             tvDescription = itemView.findViewById(R.id.tvDescription);
             ivWeatherIcon = itemView.findViewById(R.id.ivWeatherIcon);
             ivRemove = itemView.findViewById(R.id.ivRemove);
+            ivItemBackground = itemView.findViewById(R.id.ivItemBackground);
         }
     }
 }
