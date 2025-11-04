@@ -857,8 +857,22 @@ public class MainActivity extends AppCompatActivity {
                     // 5. LƯU LẠI (để lần sau mở app nó nhớ)
                     saveCurrentCity(selectedCity);
                 }
+            } else {
+                // ✅ THÊM: Khi quay về từ trang yêu thích mà không chọn gì
+                // Cập nhật lại trạng thái nút yêu thích cho thành phố hiện tại
+                updateFavoriteButton();
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // ✅ Cập nhật trạng thái nút yêu thích khi quay về activity
+        // Delay một chút để đảm bảo dữ liệu đã được cập nhật
+        new android.os.Handler().postDelayed(() -> {
+            updateFavoriteButton();
+        }, 100);
     }
 
     // ===== ✅ CÁC METHOD MỚI CHO TÍNH NĂNG YÊU THÍCH VÀ HÌNH NỀN =====
@@ -944,6 +958,11 @@ public class MainActivity extends AppCompatActivity {
 
     
     private void updateFavoriteButton() {
+        // Kiểm tra null safety
+        if (currentCityName == null || currentCityName.isEmpty() || ivFavoriteButton == null) {
+            return;
+        }
+        
         boolean isFavorite = favoriteManager.isFavorite(currentCityName);
         if (isFavorite) {
             ivFavoriteButton.setImageResource(R.drawable.ic_star_filled);
@@ -953,6 +972,12 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void toggleFavorite() {
+        // Kiểm tra null safety
+        if (currentCityName == null || currentCityName.isEmpty()) {
+            Toast.makeText(this, "Chưa có thông tin thành phố", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         boolean isFavorite = favoriteManager.isFavorite(currentCityName);
         
         if (isFavorite) {
@@ -966,9 +991,9 @@ public class MainActivity extends AppCompatActivity {
                 currentCityName, 
                 currentLat, 
                 currentLon,
-                currentTempForHourly,
-                currentWeatherDescription,
-                currentWeatherIcon
+                currentTempForHourly != null ? currentTempForHourly : "",
+                currentWeatherDescription != null ? currentWeatherDescription : "",
+                currentWeatherIcon != null ? currentWeatherIcon : ""
             );
             favoriteManager.addFavorite(favorite);
             ivFavoriteButton.setImageResource(R.drawable.ic_star_filled);
