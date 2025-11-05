@@ -1,0 +1,54 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MyWeatherApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.MyWeatherApp" parent="Base.Theme.MyWeatherApp" />
+
+    <!-- Modern Weather App Styles -->
+    <style name="WeatherTitle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="WeatherTemperature">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">72sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="WeatherDescription">
+        <item name="android:textColor">#E0E0E0</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="WeatherSubtitle">
+        <item name="android:textColor">#CCCCCC</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="SectionTitle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="AppSearchViewStyle" parent="Widget.AppCompat.SearchView">
+
+            <item name="android:textColorHint">@color/text_hint_gray</item>
+
+            <item name="android:editTextColor">@color/white</item>
+
+            <item name="android:tintMode">src_in</item>
+            <item name="android:tint">@color/text_hint_gray</item>
+    </style>
+
+</resources>
