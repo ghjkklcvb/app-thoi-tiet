@@ -8,41 +8,78 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
+import android.widget.ImageView;
 
 public class SavedCitiesAdapter extends RecyclerView.Adapter<SavedCitiesAdapter.CityViewHolder> {
 
-    // Dữ liệu là một danh sách các chuỗi (tên thành phố)
     private List<String> cityList;
+    private OnItemClickListener listener; // Cái này của em đã có
 
-    // 1. "Bản hợp đồng" (Interface)
-    public interface OnItemClickListener {
-        void onItemClick(int position); // Báo cho Activity biết vị trí (position) đã được bấm
+    // --- CODE MỚI ĐỂ XÓA ---
+    private OnDeleteClickListener deleteClickListener;
+
+    public interface OnDeleteClickListener {
+        void onDeleteClick(int position);
     }
 
-    private OnItemClickListener listener; // Biến để "giữ" hợp đồng
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteClickListener = listener;
+    }
+    // -------------------------
 
-    // 2. Hàm để Activity "ký hợp đồng"
+    // Interface cũ của em (giữ nguyên)
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    // Constructor
+    // Constructor (giữ nguyên)
     public SavedCitiesAdapter(List<String> cityList) {
         this.cityList = cityList;
     }
 
-    // 1. Tạo "Giá đỡ" (ViewHolder)
-    public static class CityViewHolder extends RecyclerView.ViewHolder {
+    // --- 1. SỬA LẠI CITYVIEWHOLDER ---
+    public class CityViewHolder extends RecyclerView.ViewHolder {
         TextView tvSavedCityName;
+        ImageView ivDeleteCity; // <-- Thêm biến cho nút xóa
 
         public CityViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Ánh xạ TextView từ "khuôn" saved_city_item.xml
+            // Ánh xạ
             tvSavedCityName = itemView.findViewById(R.id.tvSavedCityName);
+            ivDeleteCity = itemView.findViewById(R.id.ivDeleteCity); // <-- Ánh xạ nút xóa
+
+            // 1. Bắt sự kiện bấm vào CẢ HÀNG (để chọn)
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
+            // 2. Bắt sự kiện bấm vào NÚT XÓA
+            ivDeleteCity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (deleteClickListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            deleteClickListener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 
-    // 2. "Đúc khuôn" (inflate layout)
+    // onCreateViewHolder (giữ nguyên)
     @NonNull
     @Override
     public CityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -51,31 +88,18 @@ public class SavedCitiesAdapter extends RecyclerView.Adapter<SavedCitiesAdapter.
         return new CityViewHolder(view);
     }
 
-    // 3. "Đổ dữ liệu" vào khuôn
+    // --- 2. SỬA LẠI ONBINDVIEWHOLDER ---
     @Override
     public void onBindViewHolder(@NonNull CityViewHolder holder, int position) {
-        // Lấy tên thành phố ở vị trí "position"
         String cityName = cityList.get(position);
-
-        // Gán tên vào TextView
         holder.tvSavedCityName.setText(cityName);
 
-        // 3. Bắt sự kiện bấm vào hàng
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    int adapterPosition = holder.getAdapterPosition();
-                    if (adapterPosition != RecyclerView.NO_POSITION) {
-                        // Gọi "hợp đồng", gửi vị trí (position) ra ngoài
-                        listener.onItemClick(adapterPosition);
-                    }
-                }
-            }
-        });
+        // *** XÓA PHẦN NÀY ĐI ***
+        // Vì em đã chuyển listener vào trong ViewHolder rồi
+        // (code cũ của em: holder.itemView.setOnClickListener(...))
     }
 
-    // 4. "Đếm" số lượng
+    // getItemCount (giữ nguyên)
     @Override
     public int getItemCount() {
         return cityList.size();

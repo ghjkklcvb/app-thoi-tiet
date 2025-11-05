@@ -43,10 +43,11 @@
 
             <TextView
                 android:id="@+id/tvCityName"
-                android:layout_width="234dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_toStartOf="@+id/ivFavoriteButton"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="48dp"
+                android:layout_marginEnd="48dp"
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
@@ -62,6 +63,7 @@
                 android:layout_height="36dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:layout_marginEnd="12dp"
                 android:src="@drawable/ic_star_outline"
                 android:contentDescription="Thêm vào yêu thích"
                 android:clickable="true"
@@ -152,12 +154,16 @@
             </LinearLayout>
 
             <!-- Daily Forecast Card -->
+
+            <!-- Weather Details Grid -->
+
+            <!-- Spacer for bottom buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/glass_card_background"
                 android:orientation="vertical"
                 android:padding="16dp">
@@ -165,12 +171,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:fontFamily="sans-serif-medium"
                     android:text="Dự báo 5 ngày"
                     android:textColor="@color/white"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginBottom="12dp" />
+                    android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvDailyForecast"
@@ -181,13 +187,12 @@
 
             </LinearLayout>
 
-            <!-- Weather Details Grid -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/glass_card_background"
                 android:orientation="vertical"
                 android:padding="16dp">
@@ -195,12 +200,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:fontFamily="sans-serif-medium"
                     android:text="Chi tiết thời tiết"
                     android:textColor="@color/white"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginBottom="12dp" />
+                    android:textStyle="bold" />
 
                 <GridLayout
                     android:layout_width="match_parent"
@@ -265,10 +270,11 @@
 
             </LinearLayout>
 
-            <!-- Spacer for bottom buttons -->
             <View
                 android:layout_width="match_parent"
-                android:layout_height="80dp" />
+                android:layout_height="95dp"
+                android:layout_row="1"
+                android:layout_column="12" />
 
         </LinearLayout>
 

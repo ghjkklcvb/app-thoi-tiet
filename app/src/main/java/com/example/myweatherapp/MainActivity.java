@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentWeatherIcon = "";
     private String currentWeatherDescription = "";
 
-    private final String API_KEY = "f79c108bad93ab54be45c05a5c21a541";
+    private final String API_KEY = "56852ceecb78b34704e90b7c36712630";
     private final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
     private final String BASE_URL_FORECAST = "https://api.openweathermap.org/data/2.5/forecast";
 
@@ -148,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
         // ===== ✅ KHỞI TẠO GPS CLIENT VÀ FAVORITE MANAGER =====
         fusedLocationClient = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(this);
         favoriteManager = new FavoriteLocationManager(this);
+        
+
 // THAY ĐỔI LOGIC KHỞI ĐỘNG
         // 1. Tải thành phố đã lưu từ "sổ tay"
         String savedCity = loadCurrentCity(); // Mặc định là "Hanoi" nếu chưa có
@@ -334,7 +336,9 @@ public class MainActivity extends AppCompatActivity {
                         tvSunriseDescription.setVisibility(View.VISIBLE);
 
                         // ✅ CẬP NHẬT HÌNH NỀN ĐỘNG
-                        updateBackgroundBasedOnWeather(description, weather.getString("icon"));
+                        String originalIconCode = weather.getString("icon");
+                        String customIconCode = WeatherBackgroundManager.getCustomIconCode(description, originalIconCode);
+                        updateBackgroundBasedOnWeather(description, customIconCode);
                         
                         // ✅ CẬP NHẬT TRẠNG THÁI NÚT YÊU THÍCH
                         updateFavoriteButton();
@@ -667,7 +671,9 @@ public class MainActivity extends AppCompatActivity {
                             tvSunriseDescription.setVisibility(View.VISIBLE);
 
                             // ✅ CẬP NHẬT HÌNH NỀN ĐỘNG
-                            updateBackgroundBasedOnWeather(description, weather.getString("icon"));
+                            String originalIconCode = weather.getString("icon");
+                            String customIconCode = WeatherBackgroundManager.getCustomIconCode(description, originalIconCode);
+                            updateBackgroundBasedOnWeather(description, customIconCode);
                             
                             // ✅ CẬP NHẬT TRẠNG THÁI NÚT YÊU THÍCH
                             updateFavoriteButton();
@@ -1000,6 +1006,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Đã thêm " + currentCityName + " vào yêu thích", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
 
 }

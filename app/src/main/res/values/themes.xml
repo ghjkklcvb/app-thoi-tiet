@@ -40,4 +40,15 @@
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+
+    <style name="AppSearchViewStyle" parent="Widget.AppCompat.SearchView">
+
+            <item name="android:textColorHint">@color/text_hint_gray</item>
+
+            <item name="android:editTextColor">@color/white</item>
+
+            <item name="android:tintMode">src_in</item>
+            <item name="android:tint">@color/text_hint_gray</item>
+    </style>
+
 </resources>

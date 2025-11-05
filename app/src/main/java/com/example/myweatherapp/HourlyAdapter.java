@@ -88,13 +88,21 @@ public class HourlyAdapter extends RecyclerView.Adapter<HourlyAdapter.HourlyView
             case "01n": // Trăng
                 return R.drawable.ic_moon;
             case "02d": // Nắng + Mây
-            case "03d": // Mây
-            case "04d": // Mây dày
-                return R.drawable.ic_cloudy;
+                return R.drawable.ic_partly_cloudy;
+            case "03d": // Mây cụm (scattered clouds)
+                return R.drawable.ic_cloudy_sky;
+            case "04d": // Mây đen u ám (broken clouds)
+                return R.drawable.ic_cloud_svgrepo;
             case "02n": // Trăng + Mây
-            case "03n": // Mây
-            case "04n": // Mây dày
-                return R.drawable.ic_cloudy; // (Tạm dùng chung icon mây cho ban đêm)
+                return R.drawable.ic_cloudy_night;
+            case "03n": // Mây cụm ban đêm (scattered clouds)
+                return R.drawable.ic_cloudy_sky;
+            case "04n": // Mây đen u ám ban đêm (broken clouds)
+                return R.drawable.ic_cloudy; 
+            case "05d": // Mây cụm ban ngày (clustered clouds)
+                return R.drawable.ic_clustered_clouds;
+            case "05n": // Mây cụm ban đêm (clustered clouds)
+                return R.drawable.ic_clustered_clouds;
             case "09d": // Mưa rào
             case "10d": // Mưa
                 return R.drawable.ic_rainy;
@@ -110,3 +118,4 @@ public class HourlyAdapter extends RecyclerView.Adapter<HourlyAdapter.HourlyView
         }
     }
 }
+

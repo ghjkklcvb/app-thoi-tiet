@@ -18,7 +18,7 @@ import java.util.Set; // <-- Dùng để lưu danh sách
 import java.util.HashSet; // <-- Dùng để lưu danh sách
 import android.widget.TextView;
 
-public class ManageCitiesActivity extends AppCompatActivity implements SavedCitiesAdapter.OnItemClickListener {
+public class ManageCitiesActivity extends AppCompatActivity implements SavedCitiesAdapter.OnItemClickListener, SavedCitiesAdapter.OnDeleteClickListener {
 
     private ImageView ivClose; // <-- Khai báo biến
 
@@ -65,6 +65,7 @@ public class ManageCitiesActivity extends AppCompatActivity implements SavedCiti
         rvSavedCities.setAdapter(savedCitiesAdapter);
 
         savedCitiesAdapter.setOnItemClickListener(this); // "this" nghĩa là "Activity này"
+        savedCitiesAdapter.setOnDeleteClickListener(this);
 
         loadCityList(); // Đọc danh sách vĩnh viễn từ "sổ tay"
         
@@ -83,23 +84,34 @@ public class ManageCitiesActivity extends AppCompatActivity implements SavedCiti
             // 1. Được gọi khi người dùng nhấn nút "Enter" (hoặc nút tìm)
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // "query" chính là chữ người dùng gõ vào
-
                 if (query != null && !query.isEmpty()) {
-                    // Thêm thành phố mới vào danh sách
-                    cityList.add(query);
+                    String newCity = query;
 
-                    // Báo cho Adapter biết "Dữ liệu đã thay đổi!"
-                    savedCitiesAdapter.notifyDataSetChanged();
+                    // 1. (Nên làm) Kiểm tra xem thành phố đã có chưa
+                    // Nếu chưa có thì mới thêm vào danh sách và lưu lại
+                    if (!cityList.contains(newCity)) {
+                        cityList.add(newCity);
+                        // Báo adapter cập nhật (không cần dùng notifyDataSetChanged() lãng phí)
+                        savedCitiesAdapter.notifyItemInserted(cityList.size() - 1);
+                        saveCityList(); // Lưu danh sách mới
+                    }
 
-                    saveCityList(); // Lưu danh sách mới vào "sổ tay"
+                    // 2. GỬI KẾT QUẢ VỀ MAINACTIVITY NGAY LẬP TỨC
+                    // (Đây chính là logic copy từ hàm onItemClick của em)
 
-                    // Xóa chữ trong thanh tìm kiếm
-                    searchView.setQuery("", false);
-                    // Bỏ focus (tắt bàn phím)
-                    searchView.clearFocus();
+                    // 2.1. Tạo "lá thư trả lời"
+                    Intent resultIntent = new Intent();
+
+                    // 2.2. Đính kèm "gói hàng" (tên thành phố MỚI)
+                    resultIntent.putExtra("SELECTED_CITY", newCity);
+
+                    // 2.3. "Dán tem" hợp lệ
+                    setResult(RESULT_OK, resultIntent);
+
+                    // 2.4. "Gửi thư" (đóng Activity này)
+                    finish();
                 }
-                return true; // Báo rằng chúng ta đã xử lý sự kiện này
+                return true; // Báo rằng chúng ta đã xử lý
             }
 
             // 2. Được gọi mỗi khi người dùng GÕ TỪNG CHỮ
@@ -178,6 +190,29 @@ public class ManageCitiesActivity extends AppCompatActivity implements SavedCiti
         finish();
     }
 
+
+
+    // HÀM MỚI (để xóa)
+    @Override
+    public void onDeleteClick(int position) {
+        // (Tùy chọn) Lấy tên để thông báo
+        String deletedCity = cityList.get(position);
+
+        // 1. Xóa thành phố khỏi danh sách
+        cityList.remove(position);
+
+        // 2. Báo cho Adapter biết (Rất quan trọng)
+        savedCitiesAdapter.notifyItemRemoved(position);
+
+        // 3. Cập nhật lại vị trí của các item còn lại
+        savedCitiesAdapter.notifyItemRangeChanged(position, cityList.size());
+
+        // 4. Lưu lại danh sách mới vào "sổ tay"
+        saveCityList();
+
+        // 5. (Tùy chọn) Thông báo cho người dùng
+        android.widget.Toast.makeText(this, "Đã xóa " + deletedCity, android.widget.Toast.LENGTH_SHORT).show();
+    }
 
 
 
